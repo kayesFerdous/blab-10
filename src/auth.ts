@@ -1,12 +1,15 @@
 import { DrizzleAdapter } from "@auth/drizzle-adapter";
 import NextAuth from "next-auth";
 import GitHub from "next-auth/providers/github";
+import Resend from "next-auth/providers/resend";
 import { db } from "./db";
 import { users } from "./db/schema";
 import { eq } from "drizzle-orm";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
-  providers: [GitHub],
+  providers: [GitHub, Resend({
+    from: "Acme <onboarding@resend.dev>"
+  })],
   adapter: DrizzleAdapter(db),
   session: {
     strategy: "database",
