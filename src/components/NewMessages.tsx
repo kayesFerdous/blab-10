@@ -1,9 +1,8 @@
 "use client";
-import * as Ably from "ably";
-import { AblyProvider, ChannelProvider, useChannel } from "ably/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "./ui/button";
 import { Textarea } from "./ui/textarea";
+import { pusherClient } from "@/lib/pusher";
 
 interface NewMessagesProps {
   roomId: string;
@@ -12,84 +11,63 @@ interface NewMessagesProps {
 }
 
 interface Message {
-  id?: string;
-  data?: string;
+  message?: string;
   from?: string;
 }
 
-const client = new Ably.Realtime(
-  process.env.ABLY_API_KEY as string
-);
-
-function PubSub({ roomId, userId, name }: NewMessagesProps) {
+export default function NewMessage({ roomId, userId, name }: NewMessagesProps) {
   const [newMessages, setNewMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
 
-  const sendToServer = async () => {
+
+  useEffect(() => {
+    const channel = pusherClient.subscribe(roomId);
+
+    channel.bind("message", (data: Message) => {
+      setNewMessages((prevMessages) => [
+        ...prevMessages, data
+      ])
+    });
+
+    return () => {
+      pusherClient.unsubscribe(roomId)
+    };
+  }, [])
+
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
     await fetch(`/api/rooms/messages`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ userId, input, roomId, name }),
+      body: JSON.stringify({ userId, message: input, roomId, username: name }),
     });
-  };
 
-  const { channel } = useChannel(roomId, "message", (newMessage: Message) => {
-    const data = newMessage.data;
-
-    function splitLastWord(str: string) {
-      const words = str.split(" ");
-      const parsedSenderName = words.pop();
-      const parsedNewMessage = words.join(" ").trim();
-      return { parsedNewMessage, parsedSenderName };
-    }
-
-    const { parsedNewMessage, parsedSenderName } = splitLastWord(
-      data as string
-    );
-
-    setNewMessages((prevMessages) => [
-      ...prevMessages,
-      { id: newMessage.id, data: parsedNewMessage, from: parsedSenderName },
-    ]);
-  });
-
-  const spreadMessage = () => {
-    channel.publish("message", input + " " + name);
     setInput("");
-    sendToServer();
-  };
+  }
 
   return (
     <div>
       <div>
-        {newMessages.map((newMessage) => (
-          <div key={newMessage.id}>
+        {newMessages.map((newMessage, index) => (
+          <div key={index}>
             <p className="text-xs">{newMessage.from}</p>
-            <p> {newMessage.data}</p>
+            <p> {newMessage.message}</p>
           </div>
         ))}
       </div>
-      <Textarea
-        value={input}
-        onChange={({ target }) => setInput(target.value)}
-      />
-      <Button onClick={spreadMessage}>Send</Button>
+      <form onSubmit={handleSubmit}>
+
+        <Textarea
+          value={input}
+          onChange={({ target }) => setInput(target.value)}
+        />
+        <Button type="submit">Send</Button>
+      </form>
     </div>
   );
 }
 
-export default function NewMessages({
-  roomId,
-  userId,
-  name,
-}: NewMessagesProps) {
-  return (
-    <AblyProvider client={client}>
-      <ChannelProvider channelName={roomId}>
-        <PubSub roomId={roomId} userId={userId} name={name} />
-      </ChannelProvider>
-    </AblyProvider>
-  );
-}

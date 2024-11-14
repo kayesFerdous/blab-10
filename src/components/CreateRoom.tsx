@@ -8,7 +8,8 @@ import { useState } from "react";
 export default function CreateRoom({ userId }: { userId: string }) {
   const [roomName, setRoomName] = useState("");
 
-  const handeCreateRoom = async () => {
+  const handeCreateRoom = async (e: React.FormEvent) => {
+    e.preventDefault();
     setRoomName("");
 
     const response = await fetch("/api/rooms", {
@@ -35,7 +36,7 @@ export default function CreateRoom({ userId }: { userId: string }) {
     }
   }
   return (<div>
-    <form action={handeCreateRoom}>
+    <form onSubmit={handeCreateRoom}>
       <Input type="text" value={roomName} onChange={({ target }) => setRoomName(target.value)} />
       <Button type="submit">Create Room</Button>
     </form>
