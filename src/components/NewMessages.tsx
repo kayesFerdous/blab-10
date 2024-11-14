@@ -32,7 +32,7 @@ export default function NewMessage({ roomId, userId, name }: NewMessagesProps) {
     return () => {
       pusherClient.unsubscribe(roomId)
     };
-  }, [])
+  }, [roomId])
 
 
   const handleSubmit = async (e: React.FormEvent) => {
