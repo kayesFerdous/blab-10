@@ -14,7 +14,7 @@ export default async function Page({ params }: {
   const userId = session?.user?.id;
   const name = session?.user?.name;
 
-  const { roomId } = params;
+  const { roomId } = await params;
   const prev_messages: SelectMessages[] = await db
     .select()
     .from(messages)
