@@ -22,11 +22,17 @@ CREATE TABLE IF NOT EXISTS "messages" (
 	"createdAt" timestamp DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "pendingRequests" (
+	"userId" text NOT NULL,
+	"roomId" text NOT NULL,
+	"requestedAt" timestamp DEFAULT now() NOT NULL,
+	CONSTRAINT "pendingRequests_userId_roomId_pk" PRIMARY KEY("userId","roomId")
+);
+--> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "rooms" (
 	"id" text PRIMARY KEY NOT NULL,
 	"name" text NOT NULL,
 	"createdBy" text NOT NULL,
-	"pendingRequests" text[] DEFAULT '{}',
 	"createdAt" timestamp DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
@@ -75,6 +81,18 @@ END $$;
 --> statement-breakpoint
 DO $$ BEGIN
  ALTER TABLE "messages" ADD CONSTRAINT "messages_userId_user_id_fk" FOREIGN KEY ("userId") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "pendingRequests" ADD CONSTRAINT "pendingRequests_userId_user_id_fk" FOREIGN KEY ("userId") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "pendingRequests" ADD CONSTRAINT "pendingRequests_roomId_rooms_id_fk" FOREIGN KEY ("roomId") REFERENCES "public"."rooms"("id") ON DELETE cascade ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;
