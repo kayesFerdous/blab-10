@@ -6,7 +6,7 @@ export default function GithubButton() {
       "use server"
       await signIn("github")
     }}>
-      <Button type="submit" className="w-full">Sign In With Github</Button>
+      <Button type="submit" variant="default">Sign In With Github</Button>
     </form>
   )
 

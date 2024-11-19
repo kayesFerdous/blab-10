@@ -8,7 +8,6 @@ import {
 } from "drizzle-orm/pg-core";
 import type { AdapterAccountType } from "next-auth/adapters";
 
-
 export const users = pgTable("user", {
   id: text("id")
     .primaryKey()
@@ -21,29 +20,29 @@ export const users = pgTable("user", {
   createdRoom: boolean("createdRoom").notNull().default(false),
 });
 
-
-export const accounts = pgTable("account", {
-  userId: text("userId")
-    .notNull()
-    .references(() => users.id, { onDelete: "cascade" }),
-  type: text("type").$type<AdapterAccountType>().notNull(),
-  provider: text("provider").notNull(),
-  providerAccountId: text("providerAccountId").notNull(),
-  refresh_token: text("refresh_token"),
-  access_token: text("access_token"),
-  expires_at: integer("expires_at"),
-  token_type: text("token_type"),
-  scope: text("scope"),
-  id_token: text("id_token"),
-  session_state: text("session_state"),
-},
+export const accounts = pgTable(
+  "account",
+  {
+    userId: text("userId")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    type: text("type").$type<AdapterAccountType>().notNull(),
+    provider: text("provider").notNull(),
+    providerAccountId: text("providerAccountId").notNull(),
+    refresh_token: text("refresh_token"),
+    access_token: text("access_token"),
+    expires_at: integer("expires_at"),
+    token_type: text("token_type"),
+    scope: text("scope"),
+    id_token: text("id_token"),
+    session_state: text("session_state"),
+  },
   (account) => ({
     compoundKey: primaryKey({
       columns: [account.provider, account.providerAccountId],
     }),
   })
 );
-
 
 export const sessions = pgTable("session", {
   sessionToken: text("sessionToken").primaryKey(),
@@ -53,12 +52,13 @@ export const sessions = pgTable("session", {
   expires: timestamp("expires", { mode: "date" }).notNull(),
 });
 
-
-export const verificationTokens = pgTable("verificationToken", {
-  identifier: text("identifier").notNull(),
-  token: text("token").notNull(),
-  expires: timestamp("expires", { mode: "date" }).notNull(),
-},
+export const verificationTokens = pgTable(
+  "verificationToken",
+  {
+    identifier: text("identifier").notNull(),
+    token: text("token").notNull(),
+    expires: timestamp("expires", { mode: "date" }).notNull(),
+  },
   (verificationToken) => ({
     compositePk: primaryKey({
       columns: [verificationToken.identifier, verificationToken.token],
@@ -66,22 +66,39 @@ export const verificationTokens = pgTable("verificationToken", {
   })
 );
 
-
-
-
 export const rooms = pgTable("rooms", {
-  id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
   name: text("name").notNull(),
   createdBy: text("createdBy")
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
-  pendingRequests: text("pendingRequests").array().default([]),
   createdAt: timestamp("createdAt", { mode: "date" }).notNull().defaultNow(),
 });
 
+export const pendingRequests = pgTable(
+  "pendingRequests",
+  {
+    userId: text("userId")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    roomId: text("roomId")
+      .notNull()
+      .references(() => rooms.id, { onDelete: "cascade" }),
+    requestedAt: timestamp("requestedAt", { mode: "date" }).notNull().defaultNow(),
+  },
+  (pendingRequests) => ({
+    pk: primaryKey({
+      columns: [pendingRequests.userId, pendingRequests.roomId],
+    }),
+  })
+);
 
 export const messages = pgTable("messages", {
-  id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
   roomId: text("roomId")
     .notNull()
     .references(() => rooms.id, { onDelete: "cascade" }),
@@ -93,16 +110,17 @@ export const messages = pgTable("messages", {
   createdAt: timestamp("createdAt", { mode: "date" }).notNull().defaultNow(),
 });
 
-
-export const userRooms = pgTable("userRooms", {
-  userId: text("userId")
-    .notNull()
-    .references(() => users.id, { onDelete: "cascade" }),
-  roomId: text("roomId")
-    .notNull()
-    .references(() => rooms.id, { onDelete: "cascade" }),
-  joinedAt: timestamp("joinedAt", { mode: "date" }).notNull().defaultNow(),
-},
+export const userRooms = pgTable(
+  "userRooms",
+  {
+    userId: text("userId")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    roomId: text("roomId")
+      .notNull()
+      .references(() => rooms.id, { onDelete: "cascade" }),
+    joinedAt: timestamp("joinedAt", { mode: "date" }).notNull().defaultNow(),
+  },
   (userRooms) => ({
     pk: primaryKey({
       columns: [userRooms.userId, userRooms.roomId],
@@ -110,13 +128,13 @@ export const userRooms = pgTable("userRooms", {
   })
 );
 
-
 export type InsertUser = typeof users.$inferInsert;
 export type SelectUser = typeof users.$inferSelect;
 export type InsertMessages = typeof messages.$inferInsert;
 export type SelectMessages = typeof messages.$inferSelect;
 export type SelectRooms = typeof rooms.$inferSelect;
 export type InsertRooms = typeof rooms.$inferSelect;
+export type SelectUserRooms = typeof userRooms.$inferSelect;
 
 // export const authenticators = pgTable(
 //   "authenticator",
