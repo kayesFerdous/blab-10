@@ -36,6 +36,14 @@ export function JoinRoomComponent() {
           });
           break;
 
+        case JoinRequestStatus.MORE_THAN_THREE_ROOMS:
+          toast({
+            variant: "destructive",
+            title: "Failed",
+            description: "You can't join more than 3 rooms"
+          });
+          break;
+
         case JoinRequestStatus.ALREADY_REQUESTED:
           toast({
             variant: "destructive",
@@ -89,9 +97,13 @@ export function JoinRoomComponent() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-full px-4 bg-black">
+    <div className="flex items-center border border-white/15 rounded-lg justify-center min-h-full px-4 bg-black">
       <div className="w-full max-w-2xl space-y-8 p-12 bg-black text-white border border-white/25 rounded-lg shadow-lg">
-        <h1 className="text-5xl font-bold text-center lg:text-6xl">Join Room</h1>
+        <h1 className="text-4xl font-bold text-center lg:text-6xl">Request to Join</h1>
+        <p className="text-center text-sm text-white/65">
+          Have a room code? Enter it to send join request.
+          The creator decides if you are cool enough to enter.
+        </p>
         <form className="space-y-6" onSubmit={handleJoinRoom}>
           <div>
             <label htmlFor="roomCode" className="block text-xl font-medium mb-4 lg:text-2xl">
@@ -111,7 +123,7 @@ export function JoinRoomComponent() {
             className="w-full py-4 text-xl font-medium bg-blue-600 hover:bg-blue-700 text-white hover:shadow-[0_0_15px_rgba(59,130,246,0.5)] transition-all"
             disabled={isLoading || !roomCode.trim()}
           >
-            {isLoading ? "Joining..." : "Join Room"}
+            {isLoading ? "Requesting..." : "Request to Join"}
           </Button>
         </form>
       </div>

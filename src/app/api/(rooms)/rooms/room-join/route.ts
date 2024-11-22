@@ -21,6 +21,15 @@ export async function POST(req: Request) {
       return NextResponse.json({ message: "Room doesn't exists", result: JoinRequestStatus.NOT_FOUND });
     }
 
+    const joinedRooms = await db
+      .select()
+      .from(userRooms)
+      .where(eq(userRooms.userId, userId));
+
+    if (joinedRooms.length >= 4) {
+      return NextResponse.json({ message: "You can't join more than three rooms", result: JoinRequestStatus.MORE_THAN_THREE_ROOMS })
+    }
+
     const existingRequest = await db
       .select()
       .from(pendingRequests)

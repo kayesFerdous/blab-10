@@ -1,18 +1,35 @@
 import { auth } from "@/auth"
 import RoomMessages from "@/components/RoomMessageComponent"
 import { db } from "@/db"
-import { messages } from "@/db/schema"
+import { messages, SelectUserRooms, userRooms } from "@/db/schema"
 import { SelectMessages } from "@/db/schema"
-import { eq } from "drizzle-orm"
+import { and, eq } from "drizzle-orm"
+import { redirect } from "next/navigation"
 
 export default async function Page({ params }: {
   params: Promise<{ roomId: string, roomTitle: string }>
 }) {
+  const session = await auth()
+  const user = session?.user;
+
+  if (!user) return redirect("/login");
+
   const { roomId, roomTitle } = await params;
   const decodedRoomTitle = decodeURIComponent(roomTitle);
-  const session = await auth()
-  const userId = session?.user?.id
-  const name = session?.user?.name
+  const userId = user?.id
+  const name = user?.name
+
+  const response: SelectUserRooms[] = await db
+    .select()
+    .from(userRooms)
+    .where(and(
+      eq(userRooms.userId, userId),
+      eq(userRooms.roomId, roomId)
+    ));
+
+  if (!response[0]?.roomId) {
+    redirect("/rooms")
+  }
 
   const prev_messages: SelectMessages[] = await db
     .select()

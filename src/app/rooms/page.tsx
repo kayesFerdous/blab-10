@@ -3,9 +3,12 @@ import { auth } from "@/auth";
 import { db } from "@/db";
 import { rooms, userRooms } from "@/db/schema";
 import { eq, ne } from "drizzle-orm";
+import { redirect } from "next/navigation";
 
 export default async function Page() {
   const session = await auth();
+
+  if (!session?.user) redirect("/login")
   const globalRoomId = process.env.GLOBAL_ROOM_ID!;
 
   const roomsForUser = await db

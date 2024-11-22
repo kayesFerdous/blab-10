@@ -2,7 +2,7 @@ import { auth } from "@/auth";
 import { db } from "@/db";
 import { rooms, users, pendingRequests, userRooms } from "@/db/schema";
 import { eq } from "drizzle-orm";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import RoomSettings from "@/components/RoomSettingsComponent";
 
 export interface PendingRequestsUserInfo {
@@ -15,7 +15,12 @@ export interface UserInfo {
 }
 
 export default async function Page({ params }: { params: Promise<{ roomId: string }> }) {
-  const userId = (await auth())?.user?.id;
+  const session = await auth();
+
+  if (!session?.user) redirect("/login")
+
+  const userId = session?.user?.id;
+
   const { roomId } = await params;
 
   if (!userId) {

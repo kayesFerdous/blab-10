@@ -55,6 +55,10 @@ export default function CreateRoomComponent({ userId }: { userId: string }) {
     <div className="flex items-center justify-center min-h-full px-4 bg-black">
       <div className="w-full max-w-2xl space-y-8 p-12 bg-black text-white border border-white/25 rounded-lg shadow-lg">
         <h1 className="text-5xl font-bold text-center lg:text-6xl">Create Room</h1>
+        <p className="text-center text-zinc-400 text-sm">
+          You can build only **one room**—not a mansion.
+          If you already have a room, take a deep breath and cherish it. This isn’t Minecraft.
+        </p>
         <form className="space-y-6" onSubmit={handleCreateRoom}>
           <div>
             <label htmlFor="roomName" className="block text-xl font-medium mb-4 lg:text-2xl">
@@ -75,7 +79,7 @@ export default function CreateRoomComponent({ userId }: { userId: string }) {
             className="w-full py-4 text-xl font-medium bg-blue-600 hover:bg-blue-700 text-white hover:shadow-[0_0_15px_rgba(59,130,246,0.5)] transition-all"
             disabled={isLoading || !roomName.trim()}
           >
-            {isLoading ? "Creating..." : "Create Room"}
+            {isLoading ? "Summoning..." : "Create Room"}
           </Button>
         </form>
       </div>
