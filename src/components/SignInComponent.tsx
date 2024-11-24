@@ -42,7 +42,7 @@ export default function SignInPage({ path }: { path: string[] }) {
             className="w-full bg-black text-white border-white hover:bg-white hover:text-black transition-all duration-300 ease-in-out hover:shadow-[0_0_20px_rgba(255,255,255,0.5)]"
             onClick={() => {
               if (path.length == 2) signIn("google", { redirectTo: `/${path[0]}/${path[1]}` })
-              else signIn("github", { redirectTo: `/${path[0]}` })
+              else signIn("google", { redirectTo: `/${path[0]}` })
             }
             }
           >
