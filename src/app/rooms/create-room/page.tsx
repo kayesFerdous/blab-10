@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 export default async function Rooms() {
   const session = await auth();
 
-  if (!session?.user) redirect("/login")
+  if (!session?.user) redirect("/login/rooms/create-room")
 
   const userId = session?.user?.id
   return (

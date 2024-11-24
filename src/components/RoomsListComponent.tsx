@@ -1,8 +1,10 @@
-"use client";
+"use client"
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { InfoIcon, Users, Globe } from 'lucide-react';
 import { toast } from "@/hooks/use-toast";
 import { JoinRequestStatus } from "@/types/rooms";
 import Link from "next/link";
@@ -19,9 +21,7 @@ interface RoomListsProps {
 }
 
 export default function RoomLists({ userRooms, allRooms }: RoomListsProps) {
-  const [requestingRooms, setRequestingRooms] = useState<Set<string>>(
-    new Set()
-  );
+  const [requestingRooms, setRequestingRooms] = useState<Set<string>>(new Set());
 
   const handleRequestJoin = async (roomId: string) => {
     setRequestingRooms((prev) => new Set(prev).add(roomId));
@@ -41,8 +41,7 @@ export default function RoomLists({ userRooms, allRooms }: RoomListsProps) {
           toast({
             variant: "default",
             title: "Success",
-            description:
-              "Request has been made.\nWait for the room creator's approval",
+            description: "Request has been made.\nWait for the room creator's approval",
           });
           break;
 
@@ -58,7 +57,7 @@ export default function RoomLists({ userRooms, allRooms }: RoomListsProps) {
           toast({
             variant: "destructive",
             title: "Failed",
-            description: "You can't join more than 3 rooms"
+            description: "You can't join more than 3 rooms",
           });
           break;
 
@@ -120,10 +119,19 @@ export default function RoomLists({ userRooms, allRooms }: RoomListsProps) {
 
       <ScrollArea className="flex-grow w-full">
         <div className="max-w-4xl w-full mx-auto py-6 space-y-6 px-2 sm:px-6">
+          <Alert>
+            <InfoIcon className="h-4 w-4" />
+            <AlertTitle>Welcome to Blab Rooms!</AlertTitle>
+            <AlertDescription>
+              Here you can view your joined rooms and discover new ones. Remember, you can join up to 3 rooms at a time.
+            </AlertDescription>
+          </Alert>
+
           {/* Your Rooms Section */}
           <Card className="bg-zinc-900 border-zinc-800 w-full">
             <CardHeader className="px-3 sm:px-6 border-b border-white/15">
-              <CardTitle className="text-xl sm:text-2xl font-bold text-white">
+              <CardTitle className="text-xl sm:text-2xl font-bold text-white flex items-center">
+                <Users className="mr-2 h-6 w-6" />
                 Your Rooms
               </CardTitle>
             </CardHeader>
@@ -132,17 +140,13 @@ export default function RoomLists({ userRooms, allRooms }: RoomListsProps) {
                 <div className="space-y-4 pr-4">
                   {userRooms.length === 0 ? (
                     <p className="text-zinc-400 text-center py-4">
-                      You haven&apos;t joined any rooms yet.
+                      You haven&apos;t joined any rooms yet. Explore the &apos;All Rooms&apos; section below to find interesting conversations!
                     </p>
                   ) : (
                     <ul className="space-y-3">
                       {userRooms.map((room) => (
                         <li key={room.id}>
-                          <Link
-                            href={`/rooms/${room.id}/${encodeURIComponent(
-                              room.title
-                            )}`}
-                          >
+                          <Link href={`/rooms/${room.id}/${encodeURIComponent(room.title)}`}>
                             <Button
                               variant="outline"
                               className="w-full justify-start text-left font-normal bg-zinc-700 hover:bg-zinc-600 text-white border-black"
@@ -162,11 +166,15 @@ export default function RoomLists({ userRooms, allRooms }: RoomListsProps) {
           {/* All Rooms Section */}
           <Card className="bg-zinc-900 border-zinc-800 w-full">
             <CardHeader className="px-3 sm:px-6 border-b border-white/15">
-              <CardTitle className="text-xl sm:text-2xl font-bold text-white">
+              <CardTitle className="text-xl sm:text-2xl font-bold text-white flex items-center">
+                <Globe className="mr-2 h-6 w-6" />
                 All Rooms
               </CardTitle>
             </CardHeader>
             <CardContent className="px-3 sm:px-6 py-4">
+              <p className="text-zinc-400 mb-4">
+                Discover new rooms and request to join interesting conversations. Remember, you can be a member of up to 3 rooms at a time.
+              </p>
               <ScrollArea className="h-[200px] w-full">
                 <div className="space-y-4 pr-4">
                   {allRooms.map((room) => (
@@ -177,20 +185,18 @@ export default function RoomLists({ userRooms, allRooms }: RoomListsProps) {
                       <span className="flex-grow truncate text-white text-sm">
                         {room.title}
                       </span>
-                      {!userRooms.some(
-                        (userRoom) => userRoom.id === room.id
-                      ) && (
-                          <Button
-                            size="sm"
-                            onClick={() => handleRequestJoin(room.id)}
-                            disabled={requestingRooms.has(room.id)}
-                            className="flex-shrink-0 bg-blue-600 hover:bg-blue-700 text-white border-none shadow-[0_0_15px_rgba(37,99,235,0.2)] hover:shadow-[0_0_25px_rgba(37,99,235,0.35)] transition-all duration-300"
-                          >
-                            {requestingRooms.has(room.id)
-                              ? "Requesting..."
-                              : "Request to Join"}
-                          </Button>
-                        )}
+                      {!userRooms.some((userRoom) => userRoom.id === room.id) ? (
+                        <Button
+                          size="sm"
+                          onClick={() => handleRequestJoin(room.id)}
+                          disabled={requestingRooms.has(room.id)}
+                          className="flex-shrink-0 bg-blue-600 hover:bg-blue-700 text-white border-none shadow-[0_0_15px_rgba(37,99,235,0.2)] hover:shadow-[0_0_25px_rgba(37,99,235,0.35)] transition-all duration-300"
+                        >
+                          {requestingRooms.has(room.id) ? "Requesting..." : "Request to Join"}
+                        </Button>
+                      ) : (
+                        <span className="text-green-500 text-sm">Joined</span>
+                      )}
                     </li>
                   ))}
                 </div>
@@ -202,3 +208,5 @@ export default function RoomLists({ userRooms, allRooms }: RoomListsProps) {
     </div>
   );
 }
+
+

@@ -8,7 +8,7 @@ import { redirect } from "next/navigation";
 export default async function Page() {
   const session = await auth();
 
-  if (!session?.user) redirect("/login")
+  if (!session?.user) redirect("/login/rooms")
   const globalRoomId = process.env.GLOBAL_ROOM_ID!;
 
   const roomsForUser = await db

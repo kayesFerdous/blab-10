@@ -12,7 +12,7 @@ export default async function Page({ params }: {
   const session = await auth()
   const user = session?.user;
 
-  if (!user) return redirect("/login");
+  if (!user) return redirect(`/login/rooms/`);
 
   const { roomId, roomTitle } = await params;
   const decodedRoomTitle = decodeURIComponent(roomTitle);
@@ -35,6 +35,8 @@ export default async function Page({ params }: {
     .select()
     .from(messages)
     .where(eq(messages.roomId, roomId))
+
+  console.log("previous messages: \n", prev_messages);
 
   return (
     <div className="sm:h-[calc(100vh-20px)] h-[calc(100vh-9px)] bg-black border border-white/15 rounded-md">

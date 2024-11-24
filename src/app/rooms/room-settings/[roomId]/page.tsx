@@ -17,7 +17,7 @@ export interface UserInfo {
 export default async function Page({ params }: { params: Promise<{ roomId: string }> }) {
   const session = await auth();
 
-  if (!session?.user) redirect("/login")
+  if (!session?.user) redirect("/login/rooms")
 
   const userId = session?.user?.id;
 

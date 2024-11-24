@@ -1,16 +1,25 @@
-'use client'
+"use client";
 
-import { signIn } from 'next-auth/react'
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Github } from 'lucide-react'
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Github } from "lucide-react";
+import { signIn } from "next-auth/react";
 
-export default function SignInPage() {
+export default function SignInPage({ path }: { path: string[] }) {
   return (
     <div className="flex items-center justify-center min-h-full border-white/15 bg-black">
       <Card className="w-full max-w-md bg-black text-white border border-white">
         <CardHeader className="text-center space-y-1">
-          <CardTitle className="text-3xl font-bold">Looks Like You’ve Got Lost, Buddy</CardTitle>
+          <CardTitle className="text-3xl font-bold">
+            Looks Like You’ve Got Lost, Buddy
+          </CardTitle>
           <CardDescription className="text-gray-400">
             Hit a button and pray it works.
           </CardDescription>
@@ -19,7 +28,11 @@ export default function SignInPage() {
           <Button
             variant="outline"
             className="w-full bg-black text-white border-white hover:bg-white hover:text-black transition-all duration-300 ease-in-out hover:shadow-[0_0_20px_rgba(255,255,255,0.5)]"
-            onClick={() => signIn('github')}
+            onClick={() => {
+              if (path.length == 2) signIn("github", { redirectTo: `/${path[0]}/${path[1]}` })
+              else signIn("github", { redirectTo: `/${path[0]}` })
+            }
+            }
           >
             <Github className="mr-2 h-5 w-5" />
             Sign in with GitHub
@@ -27,7 +40,11 @@ export default function SignInPage() {
           <Button
             variant="outline"
             className="w-full bg-black text-white border-white hover:bg-white hover:text-black transition-all duration-300 ease-in-out hover:shadow-[0_0_20px_rgba(255,255,255,0.5)]"
-            onClick={() => signIn('google')}
+            onClick={() => {
+              if (path.length == 2) signIn("github", { redirectTo: `/${path[0]}/${path[1]}` })
+              else signIn("github", { redirectTo: `/${path[0]}` })
+            }
+            }
           >
             <svg className="mr-2 h-5 w-5" viewBox="0 0 24 24">
               <path
@@ -53,10 +70,11 @@ export default function SignInPage() {
         </CardContent>
         <CardFooter className="flex justify-center">
           <p className="text-sm text-gray-400">
-            By signing in, you agree to our nonsense terms and our non-existent privacy. Good luck!
+            By signing in, you agree to our nonsense terms and our non-existent
+            privacy. Good luck!
           </p>
         </CardFooter>
       </Card>
     </div>
-  )
+  );
 }

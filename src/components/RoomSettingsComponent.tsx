@@ -180,7 +180,7 @@ export default function RoomSettings({
             Room Settings
           </h1>
           <Button
-            onClick={() => router.back()}
+            onClick={() => router.push(`/rooms/${roomId}/${roomTitle}`)}
             variant="outline"
             size="sm"
             className="text-white bg-gray-800 hover:bg-gray-700 border-gray-600"
