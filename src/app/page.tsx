@@ -98,7 +98,7 @@ export default function HomePage() {
   )
 }
 
-function NavigationCard({ icon: Icon, title, description }: { icon: any, title: string, description: string }) {
+function NavigationCard({ icon: Icon, title, description }: { icon: React.ElementType, title: string, description: string }) {
   return (
     <div className="bg-white/5 p-6 rounded-xl hover:bg-white/10 transition-all duration-300 group">
       <div className="text-center space-y-4">
@@ -112,7 +112,7 @@ function NavigationCard({ icon: Icon, title, description }: { icon: any, title: 
   )
 }
 
-function FeatureCard({ icon: Icon, title, description }: { icon: any, title: string, description: string }) {
+function FeatureCard({ icon: Icon, title, description }: { icon: React.ElementType, title: string, description: string }) {
   return (
     <div className="bg-white/5 p-6 rounded-xl hover:bg-white/10 transition-all duration-300 group">
       <div className="text-center space-y-4">
